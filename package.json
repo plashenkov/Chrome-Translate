@@ -1,0 +1,21 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "webpack --hide-modules -p",
+    "watch": "webpack --hide-modules --watch"
+  },
+  "devDependencies": {
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.1",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-stage-2": "^6.24.1",
+    "css-loader": "^0.28.4",
+    "extract-text-webpack-plugin": "^3.0.0",
+    "vue-loader": "^12.2.2",
+    "vue-template-compiler": "^2.4.1",
+    "webpack": "^3.2.0"
+  },
+  "dependencies": {
+    "vue": "^2.4.1"
+  }
+}
