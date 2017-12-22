@@ -484,6 +484,26 @@ fieldset[disabled] .multiselect{pointer-events:none}.multiselect__spinner{positi
   transform: translateY(-10px);
 }
 
+.multiselect__content-wrapper {
+  border: 1px solid #cecece;
+  border-top: none;
+  border-radius: 0 0 3px 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  padding: 4px 0;
+}
+
+.multiselect--active .multiselect__tags {
+  border-bottom: none;
+}
+
+.multiselect__option {
+  min-height: 0;
+  text-transform: uppercase;
+  padding: 8px;
+  cursor: default;
+  font-size: 11px;
+}
+
 body {
   cursor: default;
   font-size: 11px;
@@ -558,7 +578,7 @@ body {
 }
 .tabs {
   height: 26px;
-  background: linear-gradient(to top, #dcdcdc, #c5c5c5);
+  background: linear-gradient(to bottom, #c5c5c5, #dcdcdc);
   border-top: 1px solid #ababab;
   user-select: none;
 }
@@ -572,6 +592,7 @@ body {
   position: relative;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
   transition: background-color 0.3s ease;
+  margin-right: 1px;
 }
 .tab:hover {
   background: rgba(255, 255, 255, 0.2);
@@ -579,21 +600,24 @@ body {
 .tab-translate {
   padding-left: 24px;
 }
+.tab:after {
+  content: '';
+  display: block;
+  position: absolute;
+  right: -1px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.12));
+}
 .tab.is-active {
   background: #f6f6f6;
   margin-top: -1px;
   padding-top: 1px;
   transition: none;
 }
-.tab:after {
-  content: '';
-  display: block;
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: rgba(0, 0, 0, 0.3);
+.tab.is-active:after {
+  top: 1px;
 }
 .resizer-overlay {
   position: absolute;

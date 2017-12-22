@@ -11,4 +11,6 @@ export default {
   defaultInputHeight: 100,
   minInputHeight: 40,
   minTranslationResultHeight: 40,
+
+  fallbackLanguage: 'en'
 }

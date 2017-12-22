@@ -29,7 +29,7 @@
         </div>
 
         <div class="input-container" :style="{ height: inputHeight + 'px' }">
-          <textarea class="input" tabindex="1" v-model="sourceText"></textarea>
+          <textarea class="input" tabindex="1" v-model="sourceText" :placeholder="uiStrings.inputPlaceholder"></textarea>
 
           <button class="button-play"></button>
         </div>
@@ -53,14 +53,14 @@
         class="tab tab-translate"
         :class="{ 'is-active': activeTab === 'translate' }"
         @click="activeTab = 'translate'">
-        Translate
+        {{ uiStrings.tabTranslate }}
       </div>
 
       <div
         class="tab tab-settings"
         :class="{ 'is-active': activeTab === 'settings' }"
         @click="activeTab = 'settings'">
-        Settings
+        {{ uiStrings.tabSettings }}
       </div>
     </div>
 
@@ -161,7 +161,7 @@
 
   .tabs {
     height: 26px;
-    background: linear-gradient(to top, #dcdcdc, #c5c5c5);
+    background: linear-gradient(to bottom, #c5c5c5, #dcdcdc);
     border-top: 1px solid #ababab;
     user-select: none;
   }
@@ -176,6 +176,7 @@
     position: relative;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
     transition: background-color 0.3s ease;
+    margin-right: 1px;
   }
 
   .tab:hover {
@@ -186,6 +187,17 @@
     padding-left: 24px;
   }
 
+  .tab:after {
+    content: '';
+    display: block;
+    position: absolute;
+    right: -1px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.12));
+  }
+
   .tab.is-active {
     background: #f6f6f6;
     margin-top: -1px;
@@ -193,15 +205,8 @@
     transition: none;
   }
 
-  .tab:after {
-    content: '';
-    display: block;
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background: rgba(0, 0, 0, 0.3);
+  .tab.is-active:after {
+    top: 1px;
   }
 
   .resizer-overlay {
@@ -246,6 +251,7 @@
   import Multiselect from 'vue-multiselect';
   import { between, getSelectedText } from './utils';
   import config from './config';
+  import uiStrings from './ui-strings';
   import languages from './languages';
 
   let mouseCoordinates = {};
@@ -266,14 +272,20 @@
   }
 
   function calcMaxInputHeight() {
-    const container = document.querySelector('.tabs-content');
     const toolbar = document.querySelector('.toolbar');
     const inputResizer = document.querySelector('.resizer-input');
+    const tabs = document.querySelector('.tabs');
 
-    maxInputHeight = (container.clientHeight
+    maxInputHeight = (document.body.clientHeight
       - toolbar.offsetHeight
       - inputResizer.offsetHeight
-      - config.minTranslationResultHeight);
+      - tabs.offsetHeight
+      - config.minTranslationResultHeight
+    );
+  }
+
+  function findLanguage(lang) {
+    return uiStrings[lang] ? lang : config.fallbackLanguage;
   }
 
   export default {
@@ -281,9 +293,10 @@
 
     data() {
       return {
+        inputHeight: config.defaultPopupHeight,
         popupWidth: clampPopupWidth(localStorage.popupWidth || config.defaultPopupWidth),
         popupHeight: clampPopupHeight(localStorage.popupHeight || config.defaultPopupHeight),
-        inputHeight: config.defaultPopupHeight,
+        uiLanguage: findLanguage(localStorage.uiLanguage || navigator.language || navigator.userLanguage),
 
         sourceLanguage: { name: 'Autodetect', code: 'auto' },
         targetLanguage: { name: 'Russian', code: 'ru' },
@@ -297,6 +310,10 @@
     },
 
     computed: {
+      uiStrings() {
+        return uiStrings[this.uiLanguage];
+      },
+
       sourceLanguages() {
         return languages;
       },
@@ -320,7 +337,6 @@
       });
 
       calcMaxInputHeight();
-
       this.inputHeight = clampInputHeight(localStorage.inputHeight || config.defaultInputHeight);
     },
 
