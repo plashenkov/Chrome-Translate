@@ -56,3 +56,11 @@
   cursor: default;
   font-size: 11px;
 }
+
+.multiselect__option--disabled {
+  background: none;
+  border-bottom: 1px solid #f1f1f1;
+  padding: 4px 8px !important;
+  text-align: right;
+  color: #cecece;
+}

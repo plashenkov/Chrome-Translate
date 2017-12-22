@@ -9,9 +9,12 @@
             :options="sourceLanguages"
             label="name"
             track-by="code"
+            group-label="groupLabel"
+            group-values="items"
             :allow-empty="false"
             :show-labels="false"
-            :placeholder="sourceLanguage.name">
+            :placeholder="sourceLanguage && sourceLanguage.name ? sourceLanguage.name : uiStrings.languagesChoose">
+            <span slot="noResult">{{ uiStrings.languagesNotFound }}</span>
           </multiselect>
 
           <button class="button-swap-languages"></button>
@@ -22,9 +25,12 @@
             :options="targetLanguages"
             label="name"
             track-by="code"
+            group-label="groupLabel"
+            group-values="items"
             :allow-empty="false"
             :show-labels="false"
-            :placeholder="targetLanguage.name">
+            :placeholder="targetLanguage && targetLanguage.name ? targetLanguage.name : uiStrings.languagesChoose">
+            <span slot="noResult">{{ uiStrings.languagesNotFound }}</span>
           </multiselect>
         </div>
 
@@ -276,16 +282,21 @@
     const inputResizer = document.querySelector('.resizer-input');
     const tabs = document.querySelector('.tabs');
 
-    maxInputHeight = (document.body.clientHeight
-      - toolbar.offsetHeight
-      - inputResizer.offsetHeight
-      - tabs.offsetHeight
-      - config.minTranslationResultHeight
+    maxInputHeight = (
+      document.body.clientHeight -
+      toolbar.offsetHeight -
+      inputResizer.offsetHeight -
+      tabs.offsetHeight -
+      config.minTranslationResultHeight
     );
   }
 
-  function findLanguage(lang) {
-    return uiStrings[lang] ? lang : config.fallbackLanguage;
+  function findUILanguage(uiLanguage) {
+    return uiStrings[uiLanguage] ? uiLanguage : config.fallbackLanguage;
+  }
+
+  function findLanguageItem(langCode) {
+    return languages.find(langItem => langItem.code === langCode);
   }
 
   export default {
@@ -296,10 +307,10 @@
         inputHeight: config.defaultPopupHeight,
         popupWidth: clampPopupWidth(localStorage.popupWidth || config.defaultPopupWidth),
         popupHeight: clampPopupHeight(localStorage.popupHeight || config.defaultPopupHeight),
-        uiLanguage: findLanguage(localStorage.uiLanguage || navigator.language || navigator.userLanguage),
+        uiLanguage: findUILanguage(localStorage.uiLanguage || navigator.language || navigator.userLanguage),
 
-        sourceLanguage: { name: 'Autodetect', code: 'auto' },
-        targetLanguage: { name: 'Russian', code: 'ru' },
+        sourceLanguage: null,
+        targetLanguage: null,
 
         sourceText: '',
 
@@ -314,16 +325,46 @@
         return uiStrings[this.uiLanguage];
       },
 
+      autodetectLanguageItem() {
+        return {
+          name: this.uiStrings.languageAutodetect,
+          code: 'auto'
+        };
+      },
+
       sourceLanguages() {
-        return languages;
+        return [
+          {
+            groupLabel: this.uiStrings.languagesPinned,
+            items: [this.autodetectLanguageItem]
+          },
+          {
+            groupLabel: this.uiStrings.languagesAll,
+            items: languages
+          }
+        ];
       },
 
       targetLanguages() {
-        return languages;
+        return [
+          {
+            groupLabel: this.uiStrings.languagesPinned,
+            items: [
+              findLanguageItem('ru') // TODO: сделать конфигурируемым значением
+            ]
+          },
+          {
+            groupLabel: this.uiStrings.languagesAll,
+            items: languages
+          }
+        ];
       }
     },
 
     mounted() {
+      this.sourceLanguage = this.autodetectLanguageItem;
+      this.targetLanguage = findLanguageItem('ru');
+
       getSelectedText().then(text => {
         if (text) {
           this.sourceText = text;
