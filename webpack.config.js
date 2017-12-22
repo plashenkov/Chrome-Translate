@@ -21,18 +21,13 @@ module.exports = {
         options: {
           loaders: {
             js: 'babel-loader',
-            css: ExtractTextPlugin.extract(['css-loader?url=false']),
-            scss: ExtractTextPlugin.extract(['css-loader?url=false', 'sass-loader'])
+            css: ExtractTextPlugin.extract(['css-loader?url=false'])
           }
         }
       },
       {
         test: /\.css$/,
         loader: ExtractTextPlugin.extract('css-loader?url=false')
-      },
-      {
-        test: /\.scss$/,
-        loader: ExtractTextPlugin.extract(['css-loader?url=false', 'sass-loader'])
       }
     ]
   },

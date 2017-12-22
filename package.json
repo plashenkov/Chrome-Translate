@@ -16,6 +16,8 @@
     "webpack": "^3.2.0"
   },
   "dependencies": {
-    "vue": "^2.4.1"
+    "normalize.css": "^7.0.0",
+    "vue": "^2.4.1",
+    "vue-multiselect": "^2.0.8"
   }
 }
