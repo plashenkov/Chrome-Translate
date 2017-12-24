@@ -1,7 +1,4 @@
 export default {
-  defaultPopupWidth: 500,
-  defaultPopupHeight: 400,
-
   minPopupWidth: 390,
   minPopupHeight: 220,
 
@@ -12,5 +9,8 @@ export default {
   minInputHeight: 40,
   minTranslationResultHeight: 40,
 
-  fallbackLanguage: 'en'
+  fallbackLanguage: 'en',
+
+  defaultTranslationProvider: 'google',
+  autoTranslateDelay: 500,
 }

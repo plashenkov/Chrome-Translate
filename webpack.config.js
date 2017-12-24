@@ -4,7 +4,7 @@ module.exports = {
   entry: './src/main.js',
 
   output: {
-    path: __dirname + '/extension',
+    path: __dirname + '/extension/assets',
     filename: 'bundle.js'
   },
 

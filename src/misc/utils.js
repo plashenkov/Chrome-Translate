@@ -15,4 +15,14 @@ function getSelectedText() {
   });
 }
 
-export { between, getSelectedText }
+function escapeHTMLEntities(s) {
+  const tagsToReplace = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;'
+  };
+
+  return s.replace(/[&<>]/g, tag => tagsToReplace[tag] || tag);
+}
+
+export { between, getSelectedText, escapeHTMLEntities }
