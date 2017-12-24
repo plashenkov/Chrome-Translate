@@ -13,7 +13,8 @@
             :options="sourceLanguages"
             :allow-empty="false"
             :show-labels="false"
-            :placeholder="sourceLanguage && sourceLanguage.name ? sourceLanguage.name : uiStrings.languagesChoose"
+            :custom-label="dropdownCustomLabel"
+            :placeholder="sourceLanguage && sourceLanguage.name ? uiStrings.languagesSearch : uiStrings.languagesChoose"
             @open="dropdownTouched(true)"
             @close="dropdownTouched(false)">
 
@@ -48,7 +49,7 @@
             :options="targetLanguages"
             :allow-empty="false"
             :show-labels="false"
-            :placeholder="targetLanguage && targetLanguage.name ? targetLanguage.name : uiStrings.languagesChoose"
+            :placeholder="targetLanguage && targetLanguage.name ? uiStrings.languagesSearch : uiStrings.languagesChoose"
             @open="dropdownTouched(true)"
             @close="dropdownTouched(false)">
 
@@ -314,26 +315,35 @@
         this.translate();
       },
 
-      sourceLanguage: 'translate',
-      targetLanguage: 'translate',
+      sourceLanguage() {
+        localStorage.sourceLanguage = this.sourceLanguage.code || '';
+        this.translate();
+      },
+
+      targetLanguage() {
+        localStorage.targetLanguage = this.targetLanguage.code || '';
+        this.translate();
+      }
     },
 
     mounted() {
       translator.provider = this.provider;
 
-      this.sourceLanguage = this.autodetectLanguageItem;
-      this.targetLanguage = findLanguageItem('ru');
+      this.sourceLanguage = localStorage.sourceLanguage && localStorage.sourceLanguage !== 'auto'
+        ? findLanguageItem(localStorage.sourceLanguage)
+        : this.autodetectLanguageItem;
+
+      this.targetLanguage = findLanguageItem(localStorage.targetLanguage || navigator.language);
 
       getSelectedText().then(text => {
         this.sourceText = text.trim() || localStorage.sourceText || '';
+        this.allLoaded = true;
 
         if (this.sourceText === localStorage.sourceText && localStorage.translationResult) {
           this.translationResult = JSON.parse(localStorage.translationResult);
         } else {
           this.translate();
         }
-
-        this.allLoaded = true;
 
         this.$nextTick(() => {
           document.querySelector('.input').select();
@@ -346,6 +356,10 @@
 
     methods: {
       translate() {
+        if (!this.allLoaded) {
+          return false;
+        }
+
         this.translating = true;
 
         localStorage.sourceText = this.sourceText;
@@ -472,6 +486,18 @@
 
       swapLanguages() {
         ;
+      },
+
+      dropdownCustomLabel(item) {
+        if (item.code === 'auto' && this.translationResult.detectedLanguage) {
+          const foundItem = findLanguageItem(this.translationResult.detectedLanguage);
+
+          if (foundItem) {
+            return item.name + ': ' + foundItem.name;
+          }
+        }
+
+        return item.name;
       }
     }
   }

@@ -9,7 +9,7 @@ function getSelectedText() {
         code: 'window.getSelection().toString();'
       },
       selection => {
-        resolve(selection[0]);
+        resolve(selection ? selection[0] : '');
       }
     );
   });
