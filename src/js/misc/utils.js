@@ -3,7 +3,7 @@ function between(value, min, max) {
 }
 
 function getSelectedText() {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     chrome.tabs.executeScript(
       {
         code: 'window.getSelection().toString();'

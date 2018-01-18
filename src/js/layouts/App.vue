@@ -6,13 +6,7 @@
           <multiselect
             class="dropdown-language"
             v-model="sourceLanguage"
-            label="name"
-            track-by="code"
-            group-label="groupLabel"
-            group-values="items"
             :options="sourceLanguages"
-            :allow-empty="false"
-            :show-labels="false"
             :custom-label="dropdownCustomLabel"
             :placeholder="sourceLanguage && sourceLanguage.name ? uiStrings.languagesSearch : uiStrings.languagesChoose"
             @open="dropdownTouched(true)"
@@ -26,12 +20,6 @@
                 @click.stop="pinLanguage(props.option.code, false)">
                 <use xlink:href="#icon-pin"></use>
               </svg>
-              <!--<span
-                v-if="!props.option.$isLabel && props.option.code !== 'auto'"
-                class="dropdown-language-pin"
-                :class="{ 'is-pinned': pinnedSourceLanguages.includes(props.option.code) }"
-                @click.stop="pinLanguage(props.option.code, false)">
-              </span>-->
             </span>
 
             <span slot="noResult">{{ uiStrings.languagesNotFound }}</span>
@@ -42,13 +30,7 @@
           <multiselect
             class="dropdown-language"
             v-model="targetLanguage"
-            label="name"
-            track-by="code"
-            group-label="groupLabel"
-            group-values="items"
             :options="targetLanguages"
-            :allow-empty="false"
-            :show-labels="false"
             :placeholder="targetLanguage && targetLanguage.name ? uiStrings.languagesSearch : uiStrings.languagesChoose"
             @open="dropdownTouched(true)"
             @close="dropdownTouched(false)">
@@ -61,13 +43,6 @@
                 @click.stop="pinLanguage(props.option.code, true)">
                 <use xlink:href="#icon-pin"></use>
               </svg>
-
-              <!--<span
-                v-if="!props.option.$isLabel"
-                class="dropdown-language-pin"
-                :class="{ 'is-pinned': pinnedTargetLanguages.includes(props.option.code) }"
-                @click.stop="pinLanguage(props.option.code, true)">
-              </span>-->
             </span>
 
             <span slot="noResult">{{ uiStrings.languagesNotFound }}</span>
@@ -122,24 +97,17 @@
     <div class="resizer-corner" @mousedown="cornerResizerMouseDown"></div>
     <div class="dropdown-opened-overlay" :class="{ 'is-visible': dropdownOpened }"></div>
 
-    <div class="svg-icons">
+    <svg class="svg-icons">
       <symbol id="icon-pin" viewBox="0 0 20 20">
         <path d="M4.774 15.287l-2.105 3.25 0.224 1.063 1.060-0.227 2.104-3.248c-0.224-0.12-0.446-0.248-0.661-0.39-0.218-0.141-0.426-0.292-0.622-0.448zM13.686 14.152c0.014-0.029 0.023-0.061 0.036-0.092 0.053-0.117 0.1-0.234 0.138-0.357 0.006-0.022 0.009-0.044 0.016-0.064 0.039-0.136 0.072-0.27 0.098-0.408 0-0.007 0-0.012 0-0.021 0.195-1.169-0.145-2.473-0.923-3.651l1.11-1.714c1.279 0.163 2.385-0.159 2.917-0.982 0.923-1.423-0.2-3.792-2.505-5.293-2.307-1.502-4.923-1.565-5.844-0.144-0.534 0.824-0.378 1.967 0.293 3.073l-1.112 1.714c-1.389-0.233-2.716-0.016-3.703 0.64-0.006 0.002-0.013 0.004-0.017 0.008-0.115 0.078-0.227 0.164-0.332 0.254-0.017 0.014-0.037 0.027-0.051 0.041-0.098 0.084-0.186 0.178-0.271 0.272-0.020 0.024-0.048 0.045-0.067 0.070-0.106 0.121-0.204 0.249-0.29 0.385-1.384 2.133-0.203 5.361 2.633 7.209 2.838 1.848 6.26 1.614 7.641-0.519 0.087-0.135 0.167-0.276 0.233-0.421zM12.871 4.194c-0.887-0.577-1.32-1.487-0.965-2.036 0.354-0.547 1.361-0.522 2.246 0.055 0.889 0.577 1.318 1.489 0.965 2.036s-1.358 0.522-2.246-0.055z"></path>
       </symbol>
-    </div>
+    </svg>
   </div>
 </template>
 
-<style>
-  @import "../../node_modules/normalize.css";
-  @import "../../node_modules/vue-multiselect/dist/vue-multiselect.min.css";
-  @import "../styles/multiselect.css";
-  @import "../styles/popup.css";
-</style>
-
 <script>
-  import Multiselect from 'vue-multiselect';
-  import Loader from './Loader.vue';
+  import Multiselect from '../components/Multiselect.vue';
+  import Loader from '../components/Loader.vue';
   import config from '../config';
   import { between, escapeHTMLEntities, getSelectedText } from '../misc/utils';
   import uiStrings from '../misc/ui-strings';

@@ -1,10 +1,13 @@
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
-  entry: './src/main.js',
+  entry: [
+    './src/css/main.scss',
+    './src/js/main.js'
+  ],
 
   output: {
-    path: __dirname + '/extension/assets',
+    path: __dirname + '/public_html/assets/compiled',
     filename: 'bundle.js'
   },
 
@@ -16,18 +19,12 @@ module.exports = {
         loader: 'babel-loader'
       },
       {
-        test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          loaders: {
-            js: 'babel-loader',
-            css: ExtractTextPlugin.extract(['css-loader?url=false'])
-          }
-        }
+        test: /\.(css|scss|sass)$/,
+        loader: ExtractTextPlugin.extract(['css-loader?url=false', 'sass-loader'])
       },
       {
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract('css-loader?url=false')
+        test: /\.vue$/,
+        loader: 'vue-loader?extractCSS=true'
       }
     ]
   },
