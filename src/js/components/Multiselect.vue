@@ -23,7 +23,8 @@
     }
   }
 
-  .multiselect__input {
+  .multiselect__input,
+  .multiselect__single {
     margin-bottom: 2px;
     cursor: default;
     font-size: 11px;

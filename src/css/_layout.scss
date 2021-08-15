@@ -46,19 +46,8 @@ body {
   flex: 1;
 }
 
-.button-swap-languages {
-  margin: 0 8px;
-  width: 24px;
-  border: none;
-  outline: none;
-  background: url(/images/swap-languages.svg) 50% no-repeat;
-  background-size: 18px;
-  opacity: 0.5;
-  transition: opacity 0.3s ease;
-}
-
-.button-swap-languages:hover {
-  opacity: 1;
+.dropdown-spacer {
+  width: 8px;
 }
 
 .input-container {
