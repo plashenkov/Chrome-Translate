@@ -25,12 +25,13 @@
             <span slot="noResult">{{ uiStrings.languagesNotFound }}</span>
           </multiselect>
 
-          <button class="button-swap-languages" @click="swapLanguages"></button>
+          <div class="dropdown-spacer"></div>
 
           <multiselect
             class="dropdown-language"
             v-model="targetLanguage"
             :options="targetLanguages"
+            :custom-label="targetDropdownCustomLabel"
             :placeholder="targetLanguage && targetLanguage.name ? uiStrings.languagesSearch : uiStrings.languagesChoose"
             @open="dropdownTouched(true)"
             @close="dropdownTouched(false)">
@@ -207,7 +208,8 @@
         translationResult: {
           result: '',
           additional: '',
-          detectedLanguage: ''
+          detectedLanguage: '',
+          detectedTargetLanguage: '',
         },
 
         activeTab: 'translate',
@@ -228,6 +230,13 @@
           name: this.uiStrings.languageAutodetect,
           code: 'auto'
         };
+      },
+
+      autoselectLanguageItem() {
+        return {
+          name: this.uiStrings.languageAutoselect,
+          code: 'auto'
+        }
       },
 
       sourceLanguages() {
@@ -255,12 +264,15 @@
         return [
           {
             groupLabel: this.uiStrings.languagesPinned,
-            items: this.pinnedTargetLanguages.map(langCode => {
-              return {
-                ...findLanguageItem(langCode),
-                pinned: true
-              }
-            })
+            items: [
+              this.autoselectLanguageItem,
+              ...this.pinnedTargetLanguages.map(langCode => {
+                return {
+                  ...findLanguageItem(langCode),
+                  pinned: true
+                }
+              })
+            ]
           },
           {
             groupLabel: this.uiStrings.languagesAll,
@@ -301,7 +313,9 @@
         ? findLanguageItem(localStorage.sourceLanguage)
         : this.autodetectLanguageItem;
 
-      this.targetLanguage = findLanguageItem(localStorage.targetLanguage || navigator.language);
+      this.targetLanguage = localStorage.targetLanguage && localStorage.targetLanguage !== 'auto'
+        ? findLanguageItem(localStorage.targetLanguage)
+        : this.autoselectLanguageItem;
 
       getSelectedText().then(text => {
         this.sourceText = text.trim() || localStorage.sourceText || '';
@@ -333,15 +347,28 @@
         localStorage.sourceText = this.sourceText;
         localStorage.translationResult = '';
 
-        translator
-          .translate(
-            this.sourceText,
-            this.sourceLanguage.code,
-            this.targetLanguage.code
-          )
+        let preferredLang = navigator.language.split('-')[0]
+        let preferredAntiLang = 'en'
+        let sourceLang = this.sourceLanguage.code
+        let targetLang = this.targetLanguage.code
+
+        if (targetLang === 'auto') {
+          targetLang = sourceLang === preferredLang ? preferredAntiLang : preferredLang
+        }
+
+        translator.translate(this.sourceText, sourceLang, targetLang)
+          .then(translationResult => {
+            if (sourceLang === 'auto' && this.targetLanguage.code === 'auto') {
+              sourceLang = translationResult.detectedLanguage
+              targetLang = sourceLang === preferredLang ? preferredAntiLang : preferredLang
+              return translator.translate(this.sourceText, sourceLang, targetLang)
+            }
+            return translationResult
+          })
           .then(translationResult => {
             this.translationResult = {
               detectedLanguage: this.translationResult.detectedLanguage,
+              detectedTargetLanguage: targetLang,
               ...translationResult
             };
 
@@ -361,7 +388,7 @@
       voiceTranslationResult() {
         translator.voice(
           this.translationResult.result,
-          this.targetLanguage.code
+          this.translationResult.detectedTargetLanguage || this.targetLanguage.code
         );
       },
 
@@ -466,7 +493,19 @@
         }
 
         return item.name;
-      }
+      },
+
+      targetDropdownCustomLabel(item) {
+        if (item.code === 'auto' && this.translationResult.detectedTargetLanguage) {
+          const foundItem = findLanguageItem(this.translationResult.detectedTargetLanguage);
+
+          if (foundItem) {
+            return item.name + ': ' + foundItem.name;
+          }
+        }
+
+        return item.name;
+      },
     }
   }
 </script>
