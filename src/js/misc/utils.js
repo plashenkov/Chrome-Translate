@@ -9,6 +9,7 @@ function getSelectedText() {
         code: 'window.getSelection().toString();'
       },
       selection => {
+        const err = chrome.runtime.lastError;
         resolve(selection ? selection[0] : '');
       }
     );
