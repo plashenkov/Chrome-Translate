@@ -351,17 +351,21 @@
         let preferredAntiLang = 'en'
         let sourceLang = this.sourceLanguage.code
         let targetLang = this.targetLanguage.code
+        let targetLangAuto = targetLang === 'auto'
 
-        if (targetLang === 'auto') {
+        if (targetLangAuto) {
           targetLang = sourceLang === preferredLang ? preferredAntiLang : preferredLang
         }
 
         translator.translate(this.sourceText, sourceLang, targetLang)
           .then(translationResult => {
-            if (sourceLang === 'auto' && this.targetLanguage.code === 'auto') {
+            if (sourceLang === 'auto' && targetLangAuto) {
               sourceLang = translationResult.detectedLanguage
-              targetLang = sourceLang === preferredLang ? preferredAntiLang : preferredLang
-              return translator.translate(this.sourceText, sourceLang, targetLang)
+              const finalTargetLang = sourceLang === preferredLang ? preferredAntiLang : preferredLang
+              if (finalTargetLang !== targetLang) {
+                targetLang = finalTargetLang
+                return translator.translate(this.sourceText, sourceLang, finalTargetLang)
+              }
             }
             return translationResult
           })
